@@ -179,7 +179,6 @@ class GUI:
 
     def reset(self) -> None:
         self.answer = random.choice(self.valid_words)
-        print(self.answer)
         self.guess = ""
         self.current_word = 0
         self.red_letters = set()
@@ -192,7 +191,6 @@ class GUI:
         self.update_keyboard_colour()  
     
     def mainloop(self) -> None:
-        print(self.answer)
         self.colourmode_button.pack(anchor="nw", padx=5, pady=5)
         self.keyboard_frame.pack(pady=5)
         self.feedback_label.pack(pady=5)
