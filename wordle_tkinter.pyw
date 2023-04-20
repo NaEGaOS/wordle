@@ -200,7 +200,7 @@ class GUI:
         updated_settings = self.settings
         updated_settings["default colourmode"] = self.colourmode
         with open(r"game_files\settings.json", "w") as settings_file:
-            json.dump(updated_settings, settings_file)
+            json.dump(updated_settings, settings_file, indent=4)
         self.root.destroy()
     
     def mainloop(self) -> None:
