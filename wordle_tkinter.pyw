@@ -1,5 +1,6 @@
 import tkinter as tk
 import random
+import json
 
 
 class GUI:
@@ -8,7 +9,6 @@ class GUI:
         self.root.title("wordle")
         self.max_guesses = max_guesses
         # binds
-
         def write_guess(letter: str, add: bool):  # for keyboard input
             if add:
                 self.guess += letter.lower() if len(self.guess) < 5 else ""
@@ -23,21 +23,26 @@ class GUI:
             self.root.bind(f"<{letter}>", lambda event, letter=letter: write_guess(letter, True))
         self.root.bind("<BackSpace>", lambda event: write_guess("", False))
         self.root.bind("<Return>", lambda event: self.update_words())
+        self.root.protocol("WM_DELETE_WINDOW", self.quit_game)
         # variables
         with open(r"game_files\five_letter_words.txt", "r") as word_file:  # get valid words
             self.valid_words = word_file.read().split("\n")
+        with open(r"game_files\settings.json", "r") as settings_file:  # get settings
+            self.settings = json.load(settings_file)
+        with open(r"game_files\colours.json", "r") as colours_file:  # get colours
+            self.colours = json.load(colours_file)
         self.answer = random.choice(self.valid_words)
         self.guess = ""
         self.guessed_words = set()  # because mutable and no duplicates
         self.red_letters = set()
         self.yellow_letters = set()
         self.green_letters = set()
-        self.colourmode = 1  # 0 = light, 1 = dark
+        self.colourmode = self.settings["default colourmode"]
         self.current_word = 0  # keeps track of current row (idk why I called it "word")
         # colours
-        self.bg_colour = ("#f0f0ed", "#282c34")  # light: default, dark: VS Code
-        self.bg_button_colour = ("light grey", "#333842")
-        self.fg_colour = ("black", "white")  # colour of text
+        self.bg_colour = self.colours["background"]
+        self.bg_button_colour = self.colours["button background"]
+        self.fg_colour = self.colours["foreground"]
         self.root.config(bg=self.bg_colour[self.colourmode])
         # frames
         self.keyboard_frame = tk.Frame(self.root, bg=self.bg_colour[self.colourmode])
@@ -47,7 +52,7 @@ class GUI:
                                            bg=self.bg_button_colour[self.colourmode],
                                            fg=self.fg_colour[self.colourmode])
         self.feedback_label = tk.Label(self.root, text="", bg=self.bg_colour[self.colourmode],
-                                       fg=self.fg_colour[self.colourmode], font=("Arial", 12))
+                                       fg=self.fg_colour[self.colourmode], font=(self.settings["font"], 12))
         # generate keyboard
         self.keys_reference = {}  # to access generated instances
         self.keys = (
@@ -57,7 +62,8 @@ class GUI:
         )
         for i, line in enumerate(self.keys):
             for j, key in enumerate(line):
-                current_label = tk.Label(self.keyboard_frame, text=key, width=5, height=2, font=("Arial", 8),
+                current_label = tk.Label(self.keyboard_frame, text=key, width=5, height=2,
+                                         font=(self.settings["font"], 8),
                                          bg=self.bg_button_colour[self.colourmode],
                                          fg=self.fg_colour[self.colourmode])
                 current_label.grid(row=i, column=j, padx=1, pady=1)
@@ -66,7 +72,7 @@ class GUI:
         self.words_reference = {}  # to access generated instances
         for i in range(self.max_guesses):
             for j in range(5):
-                current_label = tk.Label(self.word_frame, width=4, height=2, font=("Arial", 13),
+                current_label = tk.Label(self.word_frame, width=4, height=2, font=(self.settings["font"], 13),
                                          bg=self.bg_button_colour[self.colourmode])
                 current_label.grid(row=i, column=j, padx=1, pady=1)
                 self.words_reference[(i, j)] = current_label
@@ -188,7 +194,14 @@ class GUI:
         self.feedback_label.config(text="")
         for key in self.words_reference:
             self.words_reference[key].config(text="", bg=self.bg_button_colour[self.colourmode])
-        self.update_keyboard_colour()  
+        self.update_keyboard_colour()
+    
+    def quit_game(self) -> None:
+        updated_settings = self.settings
+        updated_settings["default colourmode"] = self.colourmode
+        with open(r"game_files\settings.json", "w") as settings_file:
+            json.dump(updated_settings, settings_file)
+        self.root.destroy()
     
     def mainloop(self) -> None:
         self.colourmode_button.pack(anchor="nw", padx=5, pady=5)
