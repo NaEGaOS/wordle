@@ -1,6 +1,8 @@
 {
     "background": ["#f0f0ed", "#282c34"],
     "foreground": ["#000000", "#ffffff"],
-    "button background": ["#dddddd", "#333842"]
-    
+    "button background": ["#dddddd", "#333842"],
+    "red": "#cc3333",
+    "yellow": "#ccb333",
+    "green": "#66cc33"
 }
