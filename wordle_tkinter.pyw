@@ -5,6 +5,12 @@ import json
 
 class GUI:
     def __init__(self, max_guesses: int = 6) -> None:
+        with open(r"game_files\five_letter_words.txt", "r") as word_file:  # get valid words
+            self.valid_words = word_file.read().split("\n")
+        with open(r"game_files\settings.json", "r") as settings_file:  # get settings
+            self.settings = json.load(settings_file)
+        with open(r"game_files\colours.json", "r") as colours_file:  # get colours
+            self.colours = json.load(colours_file)
         self.root = tk.Tk()
         self.root.title("wordle")
         self.max_guesses = max_guesses
@@ -26,12 +32,6 @@ class GUI:
         self.root.bind("<Escape>", lambda event: self.reset())
         self.root.protocol("WM_DELETE_WINDOW", self.quit_game)
         # variables
-        with open(r"game_files\five_letter_words.txt", "r") as word_file:  # get valid words
-            self.valid_words = word_file.read().split("\n")
-        with open(r"game_files\settings.json", "r") as settings_file:  # get settings
-            self.settings = json.load(settings_file)
-        with open(r"game_files\colours.json", "r") as colours_file:  # get colours
-            self.colours = json.load(colours_file)
         self.answer = random.choice(self.valid_words)
         self.guess = ""
         self.guessed_words = set()  # because mutable and no duplicates
@@ -58,19 +58,22 @@ class GUI:
             ("a", "s", "d", "f", "g", "h", "j", "k", "l"),
             ("z", "x", "c", "v", "b", "n", "m")
         )
+        width, height = self.settings["keyboard size"]
         for i, line in enumerate(keys):
             for j, key in enumerate(line):
-                current_label = tk.Label(self.keyboard_frame, text=key, width=5, height=2,
-                                         font=(self.settings["font"], 8),
+                current_label = tk.Label(self.keyboard_frame, text=key, width=width, height=height,
+                                         font=(self.settings["font"], self.settings["keyboard font size"]),
                                          bg=self.colours["button background"][self.colourmode],
                                          fg=self.colours["foreground"][self.colourmode])
                 current_label.grid(row=i, column=j, padx=1, pady=1)
                 self.keys_reference[key] = current_label
         # generate words for frame
         self.words_reference = {}  # to access generated instances
+        width, height = self.settings["word size"]
         for i in range(self.max_guesses):
             for j in range(5):
-                current_label = tk.Label(self.word_frame, width=4, height=2, font=(self.settings["font"], 13),
+                current_label = tk.Label(self.word_frame, width=width, height=height,
+                                         font=(self.settings["font"], self.settings["word font size"]),
                                          bg=self.colours["button background"][self.colourmode])
                 current_label.grid(row=i, column=j, padx=1, pady=1)
                 self.words_reference[(i, j)] = current_label
