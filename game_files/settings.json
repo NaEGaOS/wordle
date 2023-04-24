@@ -3,6 +3,12 @@
     "font": "arial",
     "keyboard font size": 8,
     "word font size": 13,
-    "keyboard size": [5, 2],
-    "word size": [4, 2]
+    "keyboard size": [
+        5,
+        2
+    ],
+    "word size": [
+        4,
+        2
+    ]
 }

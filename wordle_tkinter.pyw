@@ -33,6 +33,7 @@ class GUI:
         self.root.protocol("WM_DELETE_WINDOW", self.quit_game)
         # variables
         self.answer = random.choice(self.valid_words)
+        print(self.answer)
         self.guess = ""
         self.guessed_words = set()  # because mutable and no duplicates
         self.red_letters = set()
@@ -50,7 +51,7 @@ class GUI:
                                            fg=self.colours["foreground"][self.colourmode])
         self.feedback_label = tk.Label(self.root, text="", bg=self.colours["background"][self.colourmode],
                                        fg=self.colours["foreground"][self.colourmode],
-                                       font=(self.settings["font"], 12))
+                                       font=(self.settings["font"], self.settings["word font size"]))
         # generate keyboard
         self.keys_reference = {}  # to access generated instances
         keys = (
@@ -167,11 +168,8 @@ class GUI:
                 self.red_letters.add(letter)
                 self.words_reference[(self.current_word, i)].config(bg=self.colours["red"], fg="black")
         # after evaluation of letters
-        if self.guess == self.answer:
-            self.feedback_label.config(text="yay wowowowow u won :) :) :) !!!!")
-            self.root.after(2000, self.reset)
-        else:
-            self.feedback_label.config(text=f"the word was \"{self.answer}\" :( :( :(")
+        if self.current_word == self.max_guesses - 1 or self.guess == self.answer:
+            self.feedback_label.config(text=f"the word was \"{self.answer}\"")
             self.root.after(2000, self.reset)
         self.update_keyboard_colour()
         self.guess = ""
@@ -179,6 +177,7 @@ class GUI:
 
     def reset(self) -> None:
         self.answer = random.choice(self.valid_words)
+        print(self.answer)
         self.guess = ""
         self.current_word = 0
         self.red_letters = set()
