@@ -167,12 +167,12 @@ class GUI:
         if self.guess == self.answer:
             self.feedback_label.config(text="yay wowowowow u won :) :) :) !!!!")
             self.root.after(2000, self.reset)
+        else:
+            self.feedback_label.config(text=f"the word was \"{self.answer}\" :( :( :(")
+            self.root.after(2000, self.reset)
         self.update_keyboard_colour()
         self.guess = ""
         self.current_word += 1
-        if self.current_word == self.max_guesses and self.guess != self.answer:
-            self.feedback_label.config(text=f"the word was \"{self.answer}\" :( :( :(")
-            self.root.after(2000, self.reset)
 
     def reset(self) -> None:
         self.answer = random.choice(self.valid_words)
