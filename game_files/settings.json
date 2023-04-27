@@ -3,6 +3,8 @@
     "font": "arial",
     "keyboard font size": 8,
     "word font size": 13,
+    "keyboard pad size": 1,
+    "word pad size": 1,
     "keyboard size": [
         5,
         2

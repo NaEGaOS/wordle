@@ -35,12 +35,12 @@ class GUI:
         self.answer = random.choice(self.valid_words)
         print(self.answer)
         self.guess = ""
+        self.current_word = 0  # keeps track of current row (idk why I called it "word")
         self.guessed_words = set()  # because mutable and no duplicates
         self.red_letters = set()
         self.yellow_letters = set()
         self.green_letters = set()
         self.colourmode = self.settings["default colourmode"]
-        self.current_word = 0  # keeps track of current row (idk why I called it "word")
         self.root.config(bg=self.colours["background"][self.colourmode])
         # frames
         self.keyboard_frame = tk.Frame(self.root, bg=self.colours["background"][self.colourmode])
@@ -54,6 +54,7 @@ class GUI:
                                        font=(self.settings["font"], self.settings["word font size"]))
         # generate keyboard
         self.keys_reference = {}  # to access generated instances
+        pad = self.settings["keyboard pad size"]
         keys = (
             ("q", "w", "e", "r", "t", "y", "u", "i", "o", "p"),
             ("a", "s", "d", "f", "g", "h", "j", "k", "l"),
@@ -66,17 +67,18 @@ class GUI:
                                          font=(self.settings["font"], self.settings["keyboard font size"]),
                                          bg=self.colours["button background"][self.colourmode],
                                          fg=self.colours["foreground"][self.colourmode])
-                current_label.grid(row=i, column=j, padx=1, pady=1)
+                current_label.grid(row=i, column=j, padx=pad, pady=pad)
                 self.keys_reference[key] = current_label
         # generate words for frame
         self.words_reference = {}  # to access generated instances
+        pad = self.settings["word pad size"]
         width, height = self.settings["word size"]
         for i in range(self.max_guesses):
             for j in range(5):
                 current_label = tk.Label(self.word_frame, width=width, height=height,
                                          font=(self.settings["font"], self.settings["word font size"]),
                                          bg=self.colours["button background"][self.colourmode])
-                current_label.grid(row=i, column=j, padx=1, pady=1)
+                current_label.grid(row=i, column=j, padx=pad, pady=pad)
                 self.words_reference[(i, j)] = current_label
     
     def update_keyboard_colour(self) -> None:
@@ -96,7 +98,7 @@ class GUI:
         self.root.config(bg=self.colours["background"][self.colourmode])
         self.update_keyboard_colour()  # to not overwrite red/yellow/green
         for key in self.words_reference:
-            if self.words_reference[key].cget("bg") not in (self.colours["red"], self.colours["yellow"], self.colours["green"]):
+            if self.words_reference[key].cget("bg") not in (self.colours["red"], self.colours["yellow"], self.colours["green"]): # change to default
                 self.words_reference[key].config(bg=self.colours["button background"][self.colourmode],
                                                  fg=self.colours["foreground"][self.colourmode])
         self.colourmode_button.config(bg=self.colours["button background"][self.colourmode],
@@ -144,10 +146,11 @@ class GUI:
                 self.green_letters.add(letter)
                 self.yellow_letters.discard(letter)
                 self.words_reference[(self.current_word, i)].config(bg=self.colours["green"], fg="black")
-            elif any_green(letter):  # won't trigger if all_green
+            elif any_green(letter):
                 # check if this letter is green
                 self.yellow_letters.add(letter) if letter not in self.green_letters else None
                 if letter == self.answer[i]:
+                    self.green_letters.add(letter)
                     self.words_reference[(self.current_word, i)].config(bg=self.colours["green"], fg="black")
                 else:
                     if self.guess.count(letter) > self.answer.count(letter):
@@ -159,7 +162,7 @@ class GUI:
                     self.yellow_letters.add(letter) if letter not in self.green_letters else None
                     self.words_reference[(self.current_word, i)].config(bg=self.colours["yellow"], fg="black")
                 else:
-                    self.red_letters.add(letter)
+                    self.red_letters.add(letter) if letter not in self.yellow_letters else None
                     self.words_reference[(self.current_word, i)].config(bg=self.colours["red"], fg="black")
             elif letter in self.answer and letter != self.answer[i]:
                 self.yellow_letters.add(letter) if letter not in self.green_letters else None
@@ -205,7 +208,7 @@ class GUI:
 
 
 def main() -> None:
-    GUI().mainloop()
+    GUI(8).mainloop()
 
 
 if __name__ == "__main__":
