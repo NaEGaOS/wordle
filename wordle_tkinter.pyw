@@ -208,7 +208,7 @@ class GUI:
 
 
 def main() -> None:
-    GUI(8).mainloop()
+    GUI().mainloop()
 
 
 if __name__ == "__main__":
