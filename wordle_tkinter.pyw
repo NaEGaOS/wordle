@@ -151,6 +151,7 @@ class GUI:
                 self.yellow_letters.add(letter) if letter not in self.green_letters else None
                 if letter == self.answer[i]:
                     self.green_letters.add(letter)
+                    self.yellow_letters.discard(letter)
                     self.words_reference[(self.current_word, i)].config(bg=self.colours["green"], fg="black")
                 else:
                     if self.guess.count(letter) > self.answer.count(letter):
