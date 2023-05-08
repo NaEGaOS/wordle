@@ -25,8 +25,15 @@ class GUI:
                 self.guess = self.guess[:-1]
                 self.words_reference[(self.current_word, len(self.guess))].config(text="")
 
+        def new_window(add: bool):
+            self.max_guesses += 1 if add else -1 if self.max_guesses > 1 else 0
+            self.root.destroy()
+            GUI(self.max_guesses).mainloop()
+
         for letter in "qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM":
             self.root.bind(f"<{letter}>", lambda event, letter=letter: write_guess(letter, True))
+        self.root.bind("<plus>", lambda event: new_window(True))
+        self.root.bind("<minus>", lambda event: new_window(False))
         self.root.bind("<BackSpace>", lambda event: write_guess("", False))
         self.root.bind("<Return>", lambda event: self.update_words())
         self.root.bind("<Escape>", lambda event: self.reset())
